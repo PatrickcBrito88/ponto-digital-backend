@@ -1,0 +1,21 @@
+### SERVER PORT CONFIG ###
+server:
+  port:8080
+
+### JPA CONFIG ###
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  ### DATABASE CONFIG ###
+  datasource:
+    url: jdbc:mysql://localhost/pontodigital?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: root
+    password: pA18082008@
+
+### SECRET TOKEN CONFIG ###
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key}

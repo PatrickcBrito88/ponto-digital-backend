@@ -1,0 +1,9 @@
+### APLICATION NAME ###
+spring:
+  application:
+    name: ponto-digital-backend
+
+  ### PROFILE ###
+  profiles:
+    active: local
+
