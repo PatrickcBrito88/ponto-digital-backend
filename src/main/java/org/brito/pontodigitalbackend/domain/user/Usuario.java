@@ -35,6 +35,7 @@ public class Usuario implements UserDetails {
     private LocalDate dataNascimento;
     private LocalTime horarioEntrada;
     private LocalTime horarioSaida;
+    private boolean primeiroAcesso;
 
     public Usuario(String login, String password, UserRole role){
         this.login = login;

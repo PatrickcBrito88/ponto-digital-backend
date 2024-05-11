@@ -27,9 +27,8 @@ public class ExceptionHandlerUtils {
     @Value("${spring.application.name}")
     private String nmServico;
 
-    private void setMetaDado(Map<String, Object> map, String idTransacao) {
-        map.put("nmServico", nmServico);
-        map.put("idTransacao", idTransacao);
+    private void setMetaDado(Map<String, Object> map) {
+        map.put("nomeServico", nmServico);
     }
 
     public ResponseEntity<EntityErrorResponse> buildResponseEntityError(
@@ -89,12 +88,10 @@ public class ExceptionHandlerUtils {
                                                                         HttpStatus status,
                                                                         Map<String, Object> detalheMap,
                                                                         CodigoHttp codigoHttp) {
-        String idTransacao = req.getHeader("nmIdTransacao");
-        setMetaDado(metaDado, idTransacao);
+        setMetaDado(metaDado);
 
         EntityErrorResponse body = EntityErrorResponse
                 .builder()
-                .id(idTransacao)
                 .status(String.valueOf(status.value()))
                 .codigo(codigoHttp.getCodigo())
                 .titulo(status.getReasonPhrase())

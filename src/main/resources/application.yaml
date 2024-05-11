@@ -6,4 +6,3 @@ spring:
   ### PROFILE ###
   profiles:
     active: local
-

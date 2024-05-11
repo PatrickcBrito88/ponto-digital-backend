@@ -14,8 +14,26 @@ spring:
     username: root
     password: pA18082008@
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sistemapontodigital@gmail.com
+    password: ${PONTO_DIGITAL_PASSWORD_MAIL}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 ### SECRET TOKEN CONFIG ###
 api:
   security:
     token:
       secret: ${JWT_SECRET:my-secret-key}
+
+### MAIL CONFIG ###
+mail:
+  from: sistemapontodigital@gmail.com
+  username: sistemapontodigital@gmail.com
+  password: ${PONTO_DIGITAL_PASSWORD_MAIL}

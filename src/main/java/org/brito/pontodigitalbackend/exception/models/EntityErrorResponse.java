@@ -13,7 +13,6 @@ import java.util.Map;
 @Builder
 public class EntityErrorResponse {
 
-    private String id;
     private String status;
     private String codigo;
     private String titulo;
