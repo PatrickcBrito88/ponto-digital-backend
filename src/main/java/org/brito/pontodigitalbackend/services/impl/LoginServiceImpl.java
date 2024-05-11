@@ -3,15 +3,14 @@ package org.brito.pontodigitalbackend.services.impl;
 import org.brito.pontodigitalbackend.domain.user.AuthenticationDTO;
 import org.brito.pontodigitalbackend.domain.user.LoginResponseDTO;
 import org.brito.pontodigitalbackend.domain.user.RegisterDTO;
-import org.brito.pontodigitalbackend.domain.user.User;
+import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.exception.LoginException;
-import org.brito.pontodigitalbackend.repositories.UserRepository;
+import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.security.TokenService;
 import org.brito.pontodigitalbackend.services.LoginService;
 import org.brito.pontodigitalbackend.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class LoginServiceImpl implements LoginService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserRepository repository;
+    private UsuarioRepository repository;
 
     @Autowired
     private TokenService tokenService;
@@ -35,7 +34,7 @@ public class LoginServiceImpl implements LoginService {
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
 
-            var token = tokenService.generateToken((User) auth.getPrincipal());
+            var token = tokenService.generateToken((Usuario) auth.getPrincipal());
 
             return new LoginResponseDTO(token);
         } catch (Exception e) {
@@ -50,9 +49,9 @@ public class LoginServiceImpl implements LoginService {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.login(), encryptedPassword, data.role());
+        Usuario newUserAuthentication = new Usuario(data.login(), encryptedPassword, data.role());
 
-        this.repository.save(newUser);
+        this.repository.save(newUserAuthentication);
 
         return MessageUtils.buscaMensagemValidacao("login.usuario.cadastrado.sucesso");
     }

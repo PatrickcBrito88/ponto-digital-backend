@@ -1,6 +1,6 @@
 package org.brito.pontodigitalbackend.services;
 
-import org.brito.pontodigitalbackend.repositories.UserRepository;
+import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class AuthorizationService implements UserDetailsService {
 
     @Autowired
-    UserRepository repository;
+    UsuarioRepository repository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
