@@ -1,6 +1,7 @@
 package org.brito.pontodigitalbackend.services;
 
 import org.brito.pontodigitalbackend.domain.user.Usuario;
+import org.brito.pontodigitalbackend.dtos.AdminDTO;
 import org.brito.pontodigitalbackend.dtos.CadastroUsuarioDTO;
 
 public interface UsuarioService {
@@ -9,5 +10,5 @@ public interface UsuarioService {
 
     Usuario buscarPeloId(Long id);
 
-    String alterarSenhaAdm(String password);
+    String alterarSenhaAdm(AdminDTO adminDTO);
 }

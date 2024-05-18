@@ -4,6 +4,7 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
+import org.brito.pontodigitalbackend.dtos.AdminDTO;
 import org.brito.pontodigitalbackend.dtos.CadastroUsuarioDTO;
 import org.brito.pontodigitalbackend.exception.LoginException;
 import org.brito.pontodigitalbackend.exception.NaoEncontradoException;
@@ -71,12 +72,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public String alterarSenhaAdm(String password) {
+    public String alterarSenhaAdm(AdminDTO adminDTO) {
         Usuario usuario = new Usuario();
         usuario.setNome("Administrador");
         usuario.setRole(UserRole.ADMIN);
         usuario.setLogin("Administrador");
-        usuario.setPassword(new BCryptPasswordEncoder().encode(password));
+        usuario.setPassword(new BCryptPasswordEncoder().encode(adminDTO.getPassword()));
         usuario.setPrimeiroAcesso(Boolean.FALSE);
 
         usuarioRepository.save(usuario);
