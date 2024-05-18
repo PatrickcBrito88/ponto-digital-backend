@@ -70,6 +70,20 @@ public class UsuarioServiceImpl implements UsuarioService {
                                 MessageUtils.buscaMensagemValidacao("usuario.nao.encontrado", id)));
     }
 
+    @Override
+    public String alterarSenhaAdm(String password) {
+        Usuario usuario = new Usuario();
+        usuario.setNome("Administrador");
+        usuario.setRole(UserRole.ADMIN);
+        usuario.setLogin("Administrador");
+        usuario.setPassword(new BCryptPasswordEncoder().encode(password));
+        usuario.setPrimeiroAcesso(Boolean.FALSE);
+
+        usuarioRepository.save(usuario);
+
+        return MessageUtils.buscaMensagemValidacao("usuario.adm.senha.atualizada");
+    }
+
 
     private void verificaUsuarioExistente(String login) {
         if (this.usuarioRepository.findByLogin(login) != null) {

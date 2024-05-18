@@ -37,3 +37,11 @@ mail:
   from: sistemapontodigital@gmail.com
   username: sistemapontodigital@gmail.com
   password: ${PONTO_DIGITAL_PASSWORD_MAIL}
+
+logging:
+  level:
+    root: DEBUG
+    org:
+      springframework:
+        web: DEBUG
+      hibernate: DEBUG

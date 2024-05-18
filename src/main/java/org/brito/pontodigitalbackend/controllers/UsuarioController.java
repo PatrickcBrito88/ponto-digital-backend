@@ -1,16 +1,14 @@
 package org.brito.pontodigitalbackend.controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.brito.pontodigitalbackend.controllers.models.DefaultController;
 import org.brito.pontodigitalbackend.controllers.models.DefaultResponse;
 import org.brito.pontodigitalbackend.dtos.CadastroUsuarioDTO;
 import org.brito.pontodigitalbackend.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("usuario")
@@ -23,6 +21,11 @@ public class UsuarioController implements DefaultController {
     @PostMapping("/registro")
     public ResponseEntity<DefaultResponse<String>> login(@RequestBody @Valid CadastroUsuarioDTO data){
         return retornarSucesso(usuarioService.cadastrarUsuario(data));
+    }
+
+    @PutMapping("/altera-senha-adm")
+    public ResponseEntity<DefaultResponse<String>> alteraSenhaAdm(@RequestBody @Valid @NotBlank String password){
+        return retornarSucesso(usuarioService.alterarSenhaAdm(password));
     }
 
 

@@ -8,4 +8,6 @@ public interface UsuarioService {
     String cadastrarUsuario(CadastroUsuarioDTO cadastroUsuarioDTO);
 
     Usuario buscarPeloId(Long id);
+
+    String alterarSenhaAdm(String password);
 }
