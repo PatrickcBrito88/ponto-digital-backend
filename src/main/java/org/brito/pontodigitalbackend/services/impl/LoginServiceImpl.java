@@ -9,6 +9,7 @@ import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.security.TokenService;
 import org.brito.pontodigitalbackend.services.LoginService;
 import org.brito.pontodigitalbackend.utils.MessageUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +28,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private ModelMapper mapper;
+
 
     @Override
     public LoginResponseDTO login(AuthenticationDTO data) {
@@ -36,7 +40,9 @@ public class LoginServiceImpl implements LoginService {
 
             var token = tokenService.generateToken((Usuario) auth.getPrincipal());
 
-            return new LoginResponseDTO(token);
+            Usuario usuario = repository.findUsuarioByLogin(data.login());
+
+            return new LoginResponseDTO(usuario.getId(), usuario.getLogin(), usuario.getRole(), usuario.getNome(), token);
         } catch (Exception e) {
             throw new LoginException(e.getMessage());
         }

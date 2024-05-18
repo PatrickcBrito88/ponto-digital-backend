@@ -6,6 +6,7 @@ import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.CadastroUsuarioDTO;
 import org.brito.pontodigitalbackend.exception.LoginException;
+import org.brito.pontodigitalbackend.exception.NaoEncontradoException;
 import org.brito.pontodigitalbackend.exception.ServicoException;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.CorpoEmailService;
@@ -50,8 +51,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
 
         try {
-        String corpoEmail = corpoEmailService.geraCorpoEmailSenhaTemporaria(usuario.getNome(), senhaTemporaria);
-        emailService.enviarEmail(usuario.getEmail(), TITULO_SENHA_TEMPORARIA, corpoEmail);
+            String corpoEmail = corpoEmailService.geraCorpoEmailSenhaTemporaria(usuario.getNome(), senhaTemporaria);
+            emailService.enviarEmail(usuario.getEmail(), TITULO_SENHA_TEMPORARIA, corpoEmail);
         } catch (ServicoException | TemplateException | IOException e) {
             throw new ServicoException(e.getMessage());
         } catch (MessagingException e) {
@@ -61,10 +62,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         return MessageUtils.buscaMensagemValidacao("usuario.cadastrado.sucesso", usuario.getLogin());
     }
 
+    @Override
+    public Usuario buscarPeloId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new NaoEncontradoException(
+                                MessageUtils.buscaMensagemValidacao("usuario.nao.encontrado", id)));
+    }
+
+
     private void verificaUsuarioExistente(String login) {
         if (this.usuarioRepository.findByLogin(login) != null) {
             throw new LoginException(MessageUtils.buscaMensagemValidacao("login.usuario.ja.cadastrado", login));
         }
 
     }
+
 }
