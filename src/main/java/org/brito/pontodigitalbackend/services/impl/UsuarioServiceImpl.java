@@ -85,7 +85,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         return MessageUtils.buscaMensagemValidacao("usuario.adm.senha.atualizada");
     }
 
-
     private void verificaUsuarioExistente(String login) {
         if (this.usuarioRepository.findByLogin(login) != null) {
             throw new LoginException(MessageUtils.buscaMensagemValidacao("login.usuario.ja.cadastrado", login));

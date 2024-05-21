@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("ponto-usuario")
 public class PontoUsuarioController implements DefaultController {
@@ -22,8 +24,13 @@ public class PontoUsuarioController implements DefaultController {
         return retornarSucesso(pontoUsuarioService.salvarPontoUsuario(pontoUsuario));
     }
 
-    @GetMapping("/buscar/{idUsuario}")
+    @GetMapping("/{idUsuario}")
     public ResponseEntity<DefaultResponse<PontoUsuarioDTO>> buscarPonto(@PathVariable int idUsuario){
-        return retornarSucesso(pontoUsuarioService.buscarPontoUsuario((long) idUsuario));
+        return retornarSucesso(pontoUsuarioService.buscarPontoUsuarioPorId((long) idUsuario));
+    }
+
+    @GetMapping("/todos")
+    public ResponseEntity<DefaultResponse<List<PontoUsuarioDTO>>> buscaTodosPontos(){
+        return retornarSucesso(pontoUsuarioService.buscaTodosPontos());
     }
 }

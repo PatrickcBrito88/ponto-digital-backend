@@ -11,4 +11,5 @@ public interface UsuarioService {
     Usuario buscarPeloId(Long id);
 
     String alterarSenhaAdm(AdminDTO adminDTO);
+
 }
