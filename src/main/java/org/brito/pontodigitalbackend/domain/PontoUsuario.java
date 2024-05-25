@@ -26,6 +26,8 @@ public class PontoUsuario {
     private LocalTime inicioAlmoco;
     private LocalTime fimAlmoco;
     private LocalTime saida;
+    private boolean isAprovado;
+    private String justificativa;
 
 
 }

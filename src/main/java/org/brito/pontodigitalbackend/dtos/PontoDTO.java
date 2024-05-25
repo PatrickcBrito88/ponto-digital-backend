@@ -17,5 +17,6 @@ public class PontoDTO {
     private LocalTime inicioAlmoco;
     private LocalTime fimAlmoco;
     private LocalTime saida;
+    private String justificativa;
 
 }
