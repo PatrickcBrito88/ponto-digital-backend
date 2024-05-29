@@ -123,4 +123,6 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         return "Justificativa guardada com sucesso";
     }
 
+
+
 }

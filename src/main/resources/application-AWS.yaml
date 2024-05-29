@@ -27,12 +27,11 @@ spring:
           starttls:
             enable: true
 
-### SERVICOS AMAZON
-aws:
-  s3:
-    endpoint: http://localhost:4566
-    region: us-east-1
-    bucket: ponto-digital
+  ### SERVICOS AMAZON
+  aws:
+    s3:
+      endpoint: https://s3.amazonaws.com
+      region: us-eas-1
 
 ### SECRET TOKEN CONFIG ###
 api:

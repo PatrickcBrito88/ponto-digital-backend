@@ -6,10 +6,12 @@ import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
+import org.brito.pontodigitalbackend.services.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("ponto-usuario")
@@ -17,6 +19,9 @@ public class PontoUsuarioController implements DefaultController {
 
     @Autowired
     PontoUsuarioService pontoUsuarioService;
+
+    @Autowired
+    S3Service s3Service;
 
 
     @PostMapping("/salvar")
@@ -38,5 +43,11 @@ public class PontoUsuarioController implements DefaultController {
     public ResponseEntity<DefaultResponse<Page<PontoUsuarioDTO>>> buscaTodosPontos(@RequestParam(required = false) Integer paginaAtual,
                                                                                    @RequestParam(required = false) Integer tamanhoPagina) {
         return retornarSucesso(pontoUsuarioService.buscaTodosPontos(paginaAtual, tamanhoPagina));
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        s3Service.uploadArquivo(file);
+        return ResponseEntity.ok("OK");
     }
 }
