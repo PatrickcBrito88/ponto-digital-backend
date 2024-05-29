@@ -7,8 +7,6 @@ import lombok.Setter;
 import org.brito.pontodigitalbackend.domain.DefaultError;
 import org.springframework.http.HttpStatus;
 
-import java.util.Map;
-
 @AllArgsConstructor
 @Getter
 @Setter
@@ -26,11 +24,6 @@ public class ApplicationException extends RuntimeException {
     public ApplicationException(final String mensagem, final HttpStatus status) {
         super();
         erro = new DefaultError(mensagem, status);
-    }
-
-    public ApplicationException(final String mensagem, final HttpStatus status, final Map<String, Object> metaDado) {
-        super();
-        erro = new DefaultError(mensagem, status, metaDado);
     }
 
     public ApplicationException(final String mensagem) {

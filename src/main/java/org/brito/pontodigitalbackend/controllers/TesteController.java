@@ -19,6 +19,8 @@ public class TesteController implements DefaultController {
     @GetMapping()
     public ResponseEntity<DefaultResponse<String>> teste(){
         //usuarioService.buscarPeloId(500L);
+        usuarioService.buscarPeloId(123L);
+
         return retornarSucesso("Teste");
 
     }

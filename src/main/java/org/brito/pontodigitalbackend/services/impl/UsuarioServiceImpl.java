@@ -6,9 +6,10 @@ import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.AdminDTO;
 import org.brito.pontodigitalbackend.dtos.CadastroUsuarioDTO;
+import org.brito.pontodigitalbackend.exception.HandlerException;
 import org.brito.pontodigitalbackend.exception.LoginException;
 import org.brito.pontodigitalbackend.exception.NaoEncontradoException;
-import org.brito.pontodigitalbackend.exception.ServicoException;
+import org.brito.pontodigitalbackend.exception.NegocioException;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.CorpoEmailService;
 import org.brito.pontodigitalbackend.services.EmailService;
@@ -54,8 +55,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         try {
             String corpoEmail = corpoEmailService.geraCorpoEmailSenhaTemporaria(usuario.getNome(), senhaTemporaria);
             emailService.enviarEmail(usuario.getEmail(), TITULO_SENHA_TEMPORARIA, corpoEmail);
-        } catch (ServicoException | TemplateException | IOException e) {
-            throw new ServicoException(e.getMessage());
+        } catch (HandlerException | TemplateException | IOException e) {
+            throw new NegocioException(e.getMessage());
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
