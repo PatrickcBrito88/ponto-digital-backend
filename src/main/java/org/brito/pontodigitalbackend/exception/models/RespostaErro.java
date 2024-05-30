@@ -1,9 +1,9 @@
 package org.brito.pontodigitalbackend.exception.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
@@ -12,16 +12,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RespostaErro {
 
-    private LocalDateTime timestamp;
-    private String mensagem;
-    private String detalhes;
-    private HttpStatus status;
+    private int status;
+    private BodyErro body;
 
-    public RespostaErro(LocalDateTime timestamp, String mensagem, String detalhes, HttpStatus status) {
-        this.timestamp = timestamp;
-        this.mensagem = mensagem;
-        this.detalhes = detalhes;
+
+    public RespostaErro(BodyErro body, int status) {
+        this.body = body;
         this.status = status;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BodyErro {
+        private LocalDateTime timestamp;
+        private String mensagem;
+        private String detalhes;
     }
 
 }

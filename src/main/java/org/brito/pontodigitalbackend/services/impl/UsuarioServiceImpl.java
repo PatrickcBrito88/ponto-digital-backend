@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.AdminDTO;
-import org.brito.pontodigitalbackend.exception.LoginException;
+import org.brito.pontodigitalbackend.exception.NegocioException;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.CorpoEmailService;
 import org.brito.pontodigitalbackend.services.UsuarioService;
@@ -59,7 +59,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private void verificaUsuarioExistente(String login) {
         if (this.usuarioRepository.findByLogin(login) != null) {
-            throw new LoginException(MessageUtils.buscaMensagemValidacao("login.usuario.ja.cadastrado", login));
+            throw new NegocioException(MessageUtils.buscaMensagemValidacao("login.usuario.ja.cadastrado", login));
         }
 
     }

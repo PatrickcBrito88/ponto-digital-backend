@@ -48,21 +48,23 @@ public class GlobalExceptionHandler {
     private static RespostaErro getRespostaErro(Exception ex, WebRequest request) {
 
         RespostaErro respostaErro;
+        RespostaErro.BodyErro body;
 
         if (ex instanceof HandlerException) {
             ApplicationException appEx = (ApplicationException) ex;
-            respostaErro = new RespostaErro(
-                    LocalDateTime.now(),
+            body = new RespostaErro.BodyErro(LocalDateTime.now(),
                     appEx.getErro().getMensagem(),
-                    request.getDescription(false),
-                    appEx.getErro().getStatusCode()
+                    request.getDescription(false));
+            respostaErro = new RespostaErro(
+                    body, appEx.getErro().getStatusCode().value()
             );
         } else {
-            respostaErro = new RespostaErro(
-                    LocalDateTime.now(),
+            body = new RespostaErro.BodyErro(LocalDateTime.now(),
                     "Erro de servidor",
-                    request.getDescription(false),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    request.getDescription(false));
+            respostaErro = new RespostaErro(
+                    body, 500
+            );
         }
 
         return respostaErro;
