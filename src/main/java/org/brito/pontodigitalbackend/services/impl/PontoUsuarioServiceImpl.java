@@ -8,10 +8,10 @@ import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
 import org.brito.pontodigitalbackend.repositories.PontoUsuarioRepository;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
+import org.brito.pontodigitalbackend.services.FuncionarioService;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
 import org.brito.pontodigitalbackend.services.UsuarioService;
 import org.brito.pontodigitalbackend.utils.Paginador;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +23,23 @@ import java.util.stream.Collectors;
 @Service
 public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
-    @Autowired
+    final
     PontoUsuarioRepository pontoUsuarioRepository;
 
-    @Autowired
+    final
     UsuarioRepository usuarioRepository;
 
-    @Autowired
+    final
     UsuarioService usuarioService;
+
+    final FuncionarioService funcionarioService;
+
+    public PontoUsuarioServiceImpl(PontoUsuarioRepository pontoUsuarioRepository, UsuarioRepository usuarioRepository, UsuarioService usuarioService, FuncionarioService funcionarioService) {
+        this.pontoUsuarioRepository = pontoUsuarioRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
+        this.funcionarioService = funcionarioService;
+    }
 
 
     @Override
@@ -103,7 +112,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
         List<PontoUsuarioDTO> listaPontoUsuario = listaPontoUsuarioDTO.stream()
                 .peek(u -> {
-                    String nomeCompleto = usuarioService.buscarPeloId(u.getIdUsuario()).getNome();
+                    String nomeCompleto = funcionarioService.buscarPeloId(u.getIdUsuario()).getNome();
                     u.setNomeCompleto(nomeCompleto);
                 })
                 .collect(Collectors.toList());

@@ -1,6 +1,5 @@
 package org.brito.pontodigitalbackend.security;
 
-import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,19 +22,15 @@ public class SecurityConfigurations {
     SecurityFilter securityFilter;
 
 
-
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuario/registro").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/usuario/altera-senha-adm").hasAuthority(UserRole.USER.toString())
+                        .requestMatchers(HttpMethod.POST, "/usuario/registro").permitAll() //TODO COLOCAR PARA PERMITIR APENAS COM ADMIN ROLE
+                        .requestMatchers(HttpMethod.PUT, "/auth/altera-senha-adm").permitAll() //TODO COLOCAR PARA PERMITIR APENAS COM ADMIN ROLE
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

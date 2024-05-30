@@ -25,16 +25,19 @@ public class CorpoEmailServiceImpl implements CorpoEmailService {
         Map<String, Object> model = new HashMap<>();
         model.put("nome", nome);
         model.put("senhaTemporaria", senhaTemporaria);
+        String corpoEmail = "";
 
         try {
             Template template = freemarkerConfig.getTemplate("senhaTemporariaTemplate.ftlh");
-            return FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+            corpoEmail = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
         } catch (TemplateException | IOException e) {
             throw new NegocioException(
                     MessageUtils.buscaMensagemValidacao(
                             "free.maker.erro.geracao.template",
                             e.getMessage()));
         }
+
+        return corpoEmail;
 
     }
 

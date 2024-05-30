@@ -32,7 +32,7 @@ aws:
   s3:
     endpoint: http://localhost:4566
     region: us-east-1
-    bucket: ponto-digital
+
 
 ### SECRET TOKEN CONFIG ###
 api:
@@ -45,6 +45,11 @@ mail:
   from: sistemapontodigital@gmail.com
   username: sistemapontodigital@gmail.com
   password: ${PONTO_DIGITAL_PASSWORD_MAIL}
+
+### S3 CONFIG ###
+s3:
+  bucket:
+    email: email
 
 logging:
   level:

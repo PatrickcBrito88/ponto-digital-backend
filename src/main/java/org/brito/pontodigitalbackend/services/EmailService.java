@@ -1,10 +1,11 @@
 package org.brito.pontodigitalbackend.services;
 
-import jakarta.mail.MessagingException;
+import freemarker.template.TemplateException;
+import org.brito.pontodigitalbackend.domain.Funcionario;
+
+import java.io.IOException;
 
 public interface EmailService {
 
-    void enviarEmail(String emailDestino, String assunto, String corpo) throws MessagingException;
-
-
+    void gerarEmailSenhaProvisoria(Funcionario funcionario, String senhaDescriptografada) throws TemplateException, IOException;
 }

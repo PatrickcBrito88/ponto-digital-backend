@@ -42,9 +42,9 @@ public class LoginServiceImpl implements LoginService {
 
             Usuario usuario = repository.findUsuarioByLogin(data.login());
 
-            return new LoginResponseDTO(usuario.getId(), usuario.getLogin(), usuario.getRole(), usuario.getNome(), token);
+            return new LoginResponseDTO(usuario.getId(), usuario.getLogin(), usuario.getRole(), token);
         } catch (Exception e) {
-            throw new LoginException(e.getMessage());
+            throw new LoginException(MessageUtils.buscaMensagemValidacao("usuario.nao.auteticado"));
         }
     }
 

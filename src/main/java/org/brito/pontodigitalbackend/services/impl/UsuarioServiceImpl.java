@@ -1,85 +1,56 @@
 package org.brito.pontodigitalbackend.services.impl;
 
-import freemarker.template.TemplateException;
-import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.AdminDTO;
-import org.brito.pontodigitalbackend.dtos.CadastroUsuarioDTO;
-import org.brito.pontodigitalbackend.exception.HandlerException;
 import org.brito.pontodigitalbackend.exception.LoginException;
-import org.brito.pontodigitalbackend.exception.NaoEncontradoException;
-import org.brito.pontodigitalbackend.exception.NegocioException;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.CorpoEmailService;
-import org.brito.pontodigitalbackend.services.EmailService;
 import org.brito.pontodigitalbackend.services.UsuarioService;
 import org.brito.pontodigitalbackend.utils.MessageUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-
-import static org.brito.pontodigitalbackend.constantes.EmailConstantes.TITULO_SENHA_TEMPORARIA;
-import static org.brito.pontodigitalbackend.utils.GeradorSenha.generatePassword;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-    @Autowired
+    final
     UsuarioRepository usuarioRepository;
 
-    @Autowired
+    final
     ModelMapper mapper;
 
-    @Autowired
-    EmailService emailService;
-
-    @Autowired
+    final
     CorpoEmailService corpoEmailService;
 
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, ModelMapper mapper, CorpoEmailService corpoEmailService) {
+        this.usuarioRepository = usuarioRepository;
+        this.mapper = mapper;
+        this.corpoEmailService = corpoEmailService;
+    }
+
 
     @Override
-    public String cadastrarUsuario(CadastroUsuarioDTO cadastroUsuarioDTO) {
-        Usuario usuario = mapper.map(cadastroUsuarioDTO, Usuario.class);
-        verificaUsuarioExistente(usuario.getLogin());
-        String senhaTemporaria = generatePassword();
-        usuario.setPassword(new BCryptPasswordEncoder().encode(senhaTemporaria));
-        usuario.setRole(UserRole.USER);
-        usuario.setPrimeiroAcesso(true);
-
-        usuarioRepository.save(usuario);
-
-        try {
-            String corpoEmail = corpoEmailService.geraCorpoEmailSenhaTemporaria(usuario.getNome(), senhaTemporaria);
-            emailService.enviarEmail(usuario.getEmail(), TITULO_SENHA_TEMPORARIA, corpoEmail);
-        } catch (HandlerException | TemplateException | IOException e) {
-            throw new NegocioException(e.getMessage());
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
-
-        return MessageUtils.buscaMensagemValidacao("usuario.cadastrado.sucesso", usuario.getLogin());
+    @Transactional
+    public Usuario cadastrarUsuario(String login, String senhaCriptografada) {
+        verificaUsuarioExistente(login);
+        Usuario usuario = new Usuario(
+                login,
+                senhaCriptografada,
+                UserRole.USER
+        );
+        return usuarioRepository.save(usuario);
     }
 
     @Override
-    public Usuario buscarPeloId(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() ->
-                        new NaoEncontradoException(
-                                MessageUtils.buscaMensagemValidacao("usuario.nao.encontrado", id)));
-    }
-
-    @Override
+    @Transactional
     public String alterarSenhaAdm(AdminDTO adminDTO) {
         Usuario usuario = new Usuario();
-        usuario.setNome("Administrador");
         usuario.setRole(UserRole.ADMIN);
         usuario.setLogin("Administrador");
         usuario.setPassword(new BCryptPasswordEncoder().encode(adminDTO.getPassword()));
-        usuario.setPrimeiroAcesso(Boolean.FALSE);
 
         usuarioRepository.save(usuario);
 

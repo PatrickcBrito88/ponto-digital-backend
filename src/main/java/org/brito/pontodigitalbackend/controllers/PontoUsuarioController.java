@@ -47,7 +47,7 @@ public class PontoUsuarioController implements DefaultController {
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        s3Service.uploadArquivo(file);
+        //s3Service.uploadArquivo(file);
         return ResponseEntity.ok("OK");
     }
 }
