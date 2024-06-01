@@ -10,15 +10,24 @@ import org.brito.pontodigitalbackend.repositories.PontoUsuarioRepository;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.FuncionarioService;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
+import org.brito.pontodigitalbackend.services.S3Service;
 import org.brito.pontodigitalbackend.services.UsuarioService;
 import org.brito.pontodigitalbackend.utils.Paginador;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.brito.pontodigitalbackend.utils.FileUtils.getFileExtension;
+import static org.brito.pontodigitalbackend.utils.FileUtils.getFileName;
+import static org.brito.pontodigitalbackend.utils.S3Utils.geraKeyAnexo;
 
 @Service
 public class PontoUsuarioServiceImpl implements PontoUsuarioService {
@@ -32,13 +41,20 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
     final
     UsuarioService usuarioService;
 
-    final FuncionarioService funcionarioService;
+    final
+    FuncionarioService funcionarioService;
 
-    public PontoUsuarioServiceImpl(PontoUsuarioRepository pontoUsuarioRepository, UsuarioRepository usuarioRepository, UsuarioService usuarioService, FuncionarioService funcionarioService) {
+    final S3Service s3Service;
+
+    @Value("${s3.bucket.anexo}")
+    String nomeBucket;
+
+    public PontoUsuarioServiceImpl(PontoUsuarioRepository pontoUsuarioRepository, UsuarioRepository usuarioRepository, UsuarioService usuarioService, FuncionarioService funcionarioService, S3Service s3Service) {
         this.pontoUsuarioRepository = pontoUsuarioRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
         this.funcionarioService = funcionarioService;
+        this.s3Service = s3Service;
     }
 
 
@@ -76,7 +92,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                 item.getInicioAlmoco(),
                                 item.getFimAlmoco(),
                                 item.getSaida(),
-                                item.getJustificativa()))
+                                item.getJustificativa(),
+                                item.getAnexos()))
                         .collect(Collectors.toList());
 
         return new PontoUsuarioDTO(idUsuario, listaPonto);
@@ -101,7 +118,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                                 p.getInicioAlmoco(),
                                                 p.getFimAlmoco(),
                                                 p.getSaida(),
-                                                p.getJustificativa());
+                                                p.getJustificativa(),
+                                                p.getAnexos());
                                     }).collect(Collectors.toList());
                                     dto.setPonto(pontoDTOs);
                                     return dto;
@@ -132,6 +150,45 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         return "Justificativa guardada com sucesso";
     }
 
+    @Override
+    public String uploadAnexo(MultipartFile file, String idFuncionario, LocalDate data) throws IOException {
+        String nomeArquivo = getFileName(file);
+        String extensaoArquivo = getFileExtension(file);
+        String pathAquivo = geraKeyAnexo(idFuncionario, data, nomeArquivo);
+        byte[] bytesArquivo = file.getBytes();
+        String arquivoInserido = s3Service.uploadArquivo(nomeBucket, pathAquivo, bytesArquivo, extensaoArquivo);
+        insereArquivoPontoUsuario(arquivoInserido, idFuncionario, data);
+
+        return arquivoInserido;
+    }
+
+    @Override
+    public URL downloadAnexo(String nomeArquivo, String idFuncionario, LocalDate data) throws IOException {
+        String key = geraKeyAnexo(idFuncionario, data, nomeArquivo);
+        return s3Service.obterUrlDownload(nomeBucket, key);
+    }
+
+    @Override
+    public String apagarAnexo(String nomeArquivo, String idFuncionario, LocalDate data) {
+        String key = geraKeyAnexo(idFuncionario, data, nomeArquivo);
+        String arquivoInserido = s3Service.deleteArquivo(nomeBucket, key);
+        removeArquivoPontoUsuario(arquivoInserido, idFuncionario, data);
+        return "OK";
+    }
+
+    private void insereArquivoPontoUsuario(String arquivoInserido, String idFuncionario, LocalDate data) {
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        pontoUsuario.getAnexos().add(arquivoInserido);
+
+        pontoUsuarioRepository.save(pontoUsuario);
+    }
+
+    private void removeArquivoPontoUsuario(String arquivoInserido, String idFuncionario, LocalDate data) {
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        pontoUsuario.getAnexos().remove(arquivoInserido);
+
+        pontoUsuarioRepository.save(pontoUsuario);
+    }
 
 
 }

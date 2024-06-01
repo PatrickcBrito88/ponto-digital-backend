@@ -49,7 +49,8 @@ mail:
 ### S3 CONFIG ###
 s3:
   bucket:
-    email: email
+    email: gmtb-tec-email
+    anexo: gmtb-tec-ponto-digital-anexos
 
 logging:
   level:

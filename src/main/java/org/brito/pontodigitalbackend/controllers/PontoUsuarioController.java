@@ -13,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("ponto-usuario")
 public class PontoUsuarioController implements DefaultController {
@@ -45,9 +49,26 @@ public class PontoUsuarioController implements DefaultController {
         return retornarSucesso(pontoUsuarioService.buscaTodosPontos(paginaAtual, tamanhoPagina));
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        //s3Service.uploadArquivo(file);
-        return ResponseEntity.ok("OK");
+    @PostMapping("/anexo/upload")
+    public ResponseEntity<DefaultResponse<String>> uploadArquivo(@RequestParam("file") MultipartFile file,
+                                                              @RequestParam LocalDate data,
+                                                              @RequestParam String idFuncionario) throws IOException {
+        return retornarSucesso(pontoUsuarioService.uploadAnexo(file, idFuncionario, data));
     }
+
+    @GetMapping("/anexo/download")
+    public ResponseEntity<DefaultResponse<URL>> downloadArquivo(@RequestParam LocalDate data,
+                                                           @RequestParam String idFuncionario,
+                                                           @RequestParam String nomeAnexo) throws IOException {
+        return retornarSucesso(pontoUsuarioService.downloadAnexo(nomeAnexo, idFuncionario, data));
+    }
+
+    @DeleteMapping("/anexo")
+    public ResponseEntity<DefaultResponse<String>> deleteArquivo(@RequestParam LocalDate data,
+                                                           @RequestParam String idFuncionario,
+                                                           @RequestParam String nomeAnexo){
+        return retornarSucesso(pontoUsuarioService.apagarAnexo(nomeAnexo, idFuncionario, data));
+    }
+
+
 }

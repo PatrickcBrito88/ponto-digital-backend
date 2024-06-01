@@ -99,14 +99,14 @@
         <!-- S3 -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>auth</artifactId>
-            <version>2.20.0</version>
+            <artifactId>s3</artifactId>
+            <version>2.17.101</version>
         </dependency>
 
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>2.20.0</version>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.733</version>
         </dependency>
 
     </dependencies>

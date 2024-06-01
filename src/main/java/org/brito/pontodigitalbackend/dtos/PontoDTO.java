@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @AllArgsConstructor
 @Setter
@@ -18,5 +19,6 @@ public class PontoDTO {
     private LocalTime fimAlmoco;
     private LocalTime saida;
     private String justificativa;
+    private List<String> anexos;
 
 }

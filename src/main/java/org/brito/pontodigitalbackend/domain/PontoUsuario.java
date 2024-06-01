@@ -1,8 +1,6 @@
 package org.brito.pontodigitalbackend.domain;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +8,7 @@ import lombok.Setter;
 import org.brito.pontodigitalbackend.domain.pk.PontoUsuarioPK;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity(name = "Ponto")
 @Table(name = "Ponto")
@@ -28,6 +27,21 @@ public class PontoUsuario {
     private LocalTime saida;
     private boolean isAprovado;
     private String justificativa;
+    @ElementCollection
+    @CollectionTable(name = "ponto_anexos")
+    @Column(name = "anexo")
+    private List<String> anexos;
 
-
+    public PontoUsuario(PontoUsuarioPK id, LocalTime entrada,
+                        LocalTime inicioAlmoco, LocalTime fimAlmoco,
+                        LocalTime saida, boolean isAprovado,
+                        String justificativa) {
+        this.id = id;
+        this.entrada = entrada;
+        this.inicioAlmoco = inicioAlmoco;
+        this.fimAlmoco = fimAlmoco;
+        this.saida = saida;
+        this.isAprovado = isAprovado;
+        this.justificativa = justificativa;
+    }
 }
