@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDate;
 
 @RestController
@@ -57,7 +56,7 @@ public class PontoUsuarioController implements DefaultController {
     }
 
     @GetMapping("/anexo/download")
-    public ResponseEntity<DefaultResponse<URL>> downloadArquivo(@RequestParam LocalDate data,
+    public ResponseEntity<DefaultResponse<String>> downloadArquivo(@RequestParam LocalDate data,
                                                            @RequestParam String idFuncionario,
                                                            @RequestParam String nomeAnexo) throws IOException {
         return retornarSucesso(pontoUsuarioService.downloadAnexo(nomeAnexo, idFuncionario, data));

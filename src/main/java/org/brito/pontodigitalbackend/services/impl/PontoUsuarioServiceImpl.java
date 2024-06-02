@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,7 +162,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
     }
 
     @Override
-    public URL downloadAnexo(String nomeArquivo, String idFuncionario, LocalDate data) throws IOException {
+    public String downloadAnexo(String nomeArquivo, String idFuncionario, LocalDate data) throws IOException {
         String key = geraKeyAnexo(idFuncionario, data, nomeArquivo);
         return s3Service.obterUrlDownload(nomeBucket, key);
     }

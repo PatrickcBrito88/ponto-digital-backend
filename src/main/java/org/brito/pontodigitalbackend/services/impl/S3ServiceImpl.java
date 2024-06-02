@@ -12,7 +12,6 @@ import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
-import java.net.URL;
 import java.time.Duration;
 
 import static org.brito.pontodigitalbackend.utils.StringUtils.extractLastSegment;
@@ -51,7 +50,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public URL obterUrlDownload(String nomeBucket, String key) {
+    public String obterUrlDownload(String nomeBucket, String key) {
         if (!fileExists(nomeBucket, key)){
             throw new NaoEncontradoException(
                     MessageUtils.buscaMensagemValidacao("arquivo.nao.existe.bucket", key));
@@ -63,10 +62,11 @@ public class S3ServiceImpl implements S3Service {
                            builder -> builder.getObjectRequest(
                                    req -> req
                                            .bucket(nomeBucket)
-                                           .key(key))
-                                   .signatureDuration(duration));
+                                           .key(key)
+                                            .responseContentDisposition("attachment; filename=\"" + key + "\""))
+                           .signatureDuration(duration));
 
-           return presignedGetObjectRequest.url();
+           return presignedGetObjectRequest.url().toString();
         } catch (Exception e){
             throw new NegocioException(e.getMessage());
         }

@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDate;
 
 public interface PontoUsuarioService {
@@ -22,7 +21,7 @@ public interface PontoUsuarioService {
 
     String uploadAnexo(MultipartFile file, String idFuncionario, LocalDate data) throws IOException;
 
-    URL downloadAnexo(String nomeArquivo, String idFuncionario, LocalDate data) throws IOException;
+    String downloadAnexo(String nomeArquivo, String idFuncionario, LocalDate data) throws IOException;
 
     String apagarAnexo(String nomeArquivo, String idFuncionario, LocalDate data);
 }
