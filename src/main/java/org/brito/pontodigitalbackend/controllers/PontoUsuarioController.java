@@ -50,23 +50,30 @@ public class PontoUsuarioController implements DefaultController {
 
     @PostMapping("/anexo/upload")
     public ResponseEntity<DefaultResponse<String>> uploadArquivo(@RequestParam("file") MultipartFile file,
-                                                              @RequestParam LocalDate data,
-                                                              @RequestParam String idFuncionario) throws IOException {
+                                                                 @RequestParam LocalDate data,
+                                                                 @RequestParam String idFuncionario) throws IOException {
         return retornarSucesso(pontoUsuarioService.uploadAnexo(file, idFuncionario, data));
     }
 
     @GetMapping("/anexo/download")
     public ResponseEntity<DefaultResponse<String>> downloadArquivo(@RequestParam LocalDate data,
-                                                           @RequestParam String idFuncionario,
-                                                           @RequestParam String nomeAnexo) throws IOException {
+                                                                   @RequestParam String idFuncionario,
+                                                                   @RequestParam String nomeAnexo) throws IOException {
         return retornarSucesso(pontoUsuarioService.downloadAnexo(nomeAnexo, idFuncionario, data));
     }
 
     @DeleteMapping("/anexo")
     public ResponseEntity<DefaultResponse<String>> deleteArquivo(@RequestParam LocalDate data,
-                                                           @RequestParam String idFuncionario,
-                                                           @RequestParam String nomeAnexo){
+                                                                 @RequestParam String idFuncionario,
+                                                                 @RequestParam String nomeAnexo) {
         return retornarSucesso(pontoUsuarioService.apagarAnexo(nomeAnexo, idFuncionario, data));
+    }
+
+    @PutMapping("/aprovar")
+    public ResponseEntity<DefaultResponse<String>> aprovarPonto(@RequestParam LocalDate data,
+                                                                @RequestParam String idFuncionario,
+                                                                @RequestParam boolean aprovado) {
+        return retornarSucesso(pontoUsuarioService.aprovarPonto(data, idFuncionario, aprovado));
     }
 
 

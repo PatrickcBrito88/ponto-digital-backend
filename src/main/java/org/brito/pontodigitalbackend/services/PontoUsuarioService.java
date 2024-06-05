@@ -24,4 +24,6 @@ public interface PontoUsuarioService {
     String downloadAnexo(String nomeArquivo, String idFuncionario, LocalDate data) throws IOException;
 
     String apagarAnexo(String nomeArquivo, String idFuncionario, LocalDate data);
+
+    String aprovarPonto(LocalDate data, String idFuncionario, Boolean aprovado);
 }

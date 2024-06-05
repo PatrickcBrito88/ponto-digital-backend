@@ -69,7 +69,6 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 pontoUsuarioRegistroDTO.getPonto().getInicioAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getFimAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getSaida(),
-                false,
                 "");
 
         pontoUsuarioRepository.save(pontoUsuario);
@@ -92,7 +91,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                 item.getFimAlmoco(),
                                 item.getSaida(),
                                 item.getJustificativa(),
-                                item.getAnexos()))
+                                item.getAnexos(),
+                                item.getIsAprovado()))
                         .collect(Collectors.toList());
 
         return new PontoUsuarioDTO(idUsuario, listaPonto);
@@ -118,7 +118,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                                 p.getFimAlmoco(),
                                                 p.getSaida(),
                                                 p.getJustificativa(),
-                                                p.getAnexos());
+                                                p.getAnexos(),
+                                                p.getIsAprovado());
                                     }).collect(Collectors.toList());
                                     dto.setPonto(pontoDTOs);
                                     return dto;
@@ -172,6 +173,15 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         String key = geraKeyAnexo(idFuncionario, data, nomeArquivo);
         String arquivoInserido = s3Service.deleteArquivo(nomeBucket, key);
         removeArquivoPontoUsuario(arquivoInserido, idFuncionario, data);
+        return "OK";
+    }
+
+    @Override
+    public String aprovarPonto(LocalDate data, String idFuncionario, Boolean aprovado) {
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        pontoUsuario.setIsAprovado(aprovado);
+
+        pontoUsuarioRepository.save(pontoUsuario);
         return "OK";
     }
 

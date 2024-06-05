@@ -25,7 +25,7 @@ public class PontoUsuario {
     private LocalTime inicioAlmoco;
     private LocalTime fimAlmoco;
     private LocalTime saida;
-    private boolean isAprovado;
+    private Boolean isAprovado;
     private String justificativa;
     @ElementCollection
     @CollectionTable(name = "ponto_anexos")
@@ -34,14 +34,13 @@ public class PontoUsuario {
 
     public PontoUsuario(PontoUsuarioPK id, LocalTime entrada,
                         LocalTime inicioAlmoco, LocalTime fimAlmoco,
-                        LocalTime saida, boolean isAprovado,
+                        LocalTime saida,
                         String justificativa) {
         this.id = id;
         this.entrada = entrada;
         this.inicioAlmoco = inicioAlmoco;
         this.fimAlmoco = fimAlmoco;
         this.saida = saida;
-        this.isAprovado = isAprovado;
         this.justificativa = justificativa;
     }
 }

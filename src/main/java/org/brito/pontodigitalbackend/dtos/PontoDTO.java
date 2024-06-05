@@ -20,5 +20,6 @@ public class PontoDTO {
     private LocalTime saida;
     private String justificativa;
     private List<String> anexos;
+    private Boolean isAprovado;
 
 }
