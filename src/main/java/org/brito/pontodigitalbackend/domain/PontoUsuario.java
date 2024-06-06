@@ -31,11 +31,14 @@ public class PontoUsuario {
     @CollectionTable(name = "ponto_anexos")
     @Column(name = "anexo")
     private List<String> anexos;
+    @ElementCollection
+    @CollectionTable(name = "horarios_alterados")
+    @Column(name = "horarios_alterados")
+    private List<HorarioAlterado> horariosAlterados;
 
     public PontoUsuario(PontoUsuarioPK id, LocalTime entrada,
                         LocalTime inicioAlmoco, LocalTime fimAlmoco,
-                        LocalTime saida,
-                        String justificativa) {
+                        LocalTime saida, String justificativa) {
         this.id = id;
         this.entrada = entrada;
         this.inicioAlmoco = inicioAlmoco;

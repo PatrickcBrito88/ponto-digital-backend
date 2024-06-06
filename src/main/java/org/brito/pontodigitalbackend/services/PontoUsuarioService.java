@@ -1,5 +1,6 @@
 package org.brito.pontodigitalbackend.services;
 
+import org.brito.pontodigitalbackend.dtos.HorariosAlteracaoDTO;
 import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
@@ -26,4 +27,6 @@ public interface PontoUsuarioService {
     String apagarAnexo(String nomeArquivo, String idFuncionario, LocalDate data);
 
     String aprovarPonto(LocalDate data, String idFuncionario, Boolean aprovado);
+
+    String ajustePontoEmpregador(HorariosAlteracaoDTO horariosAlteracaoDTO);
 }

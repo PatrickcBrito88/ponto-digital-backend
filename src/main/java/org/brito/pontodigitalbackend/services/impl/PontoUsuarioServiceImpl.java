@@ -1,11 +1,9 @@
 package org.brito.pontodigitalbackend.services.impl;
 
+import org.brito.pontodigitalbackend.domain.HorarioAlterado;
 import org.brito.pontodigitalbackend.domain.PontoUsuario;
 import org.brito.pontodigitalbackend.domain.pk.PontoUsuarioPK;
-import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
-import org.brito.pontodigitalbackend.dtos.PontoDTO;
-import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
-import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
+import org.brito.pontodigitalbackend.dtos.*;
 import org.brito.pontodigitalbackend.repositories.PontoUsuarioRepository;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.FuncionarioService;
@@ -13,6 +11,7 @@ import org.brito.pontodigitalbackend.services.PontoUsuarioService;
 import org.brito.pontodigitalbackend.services.S3Service;
 import org.brito.pontodigitalbackend.services.UsuarioService;
 import org.brito.pontodigitalbackend.utils.Paginador;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.brito.pontodigitalbackend.utils.ComparadorHorarioUtils.gerarHorarioAlterado;
 import static org.brito.pontodigitalbackend.utils.FileUtils.getFileExtension;
 import static org.brito.pontodigitalbackend.utils.FileUtils.getFileName;
 import static org.brito.pontodigitalbackend.utils.S3Utils.geraKeyAnexo;
@@ -45,32 +45,24 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
     final S3Service s3Service;
 
+    final ModelMapper mapper;
+
     @Value("${s3.bucket.anexo}")
     String nomeBucket;
 
-    public PontoUsuarioServiceImpl(PontoUsuarioRepository pontoUsuarioRepository, UsuarioRepository usuarioRepository, UsuarioService usuarioService, FuncionarioService funcionarioService, S3Service s3Service) {
+    public PontoUsuarioServiceImpl(PontoUsuarioRepository pontoUsuarioRepository, UsuarioRepository usuarioRepository, UsuarioService usuarioService, FuncionarioService funcionarioService, S3Service s3Service, ModelMapper mapper) {
         this.pontoUsuarioRepository = pontoUsuarioRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
         this.funcionarioService = funcionarioService;
         this.s3Service = s3Service;
+        this.mapper = mapper;
     }
 
 
     @Override
     public String salvarPontoUsuario(PontoUsuarioRegistroDTO pontoUsuarioRegistroDTO) {
-        PontoUsuarioPK pontoUsuarioPK =
-                new PontoUsuarioPK(
-                        Long.parseLong(pontoUsuarioRegistroDTO.getIdUsuario()),
-                        pontoUsuarioRegistroDTO.getPonto().getData());
-        PontoUsuario pontoUsuario = new PontoUsuario(
-                pontoUsuarioPK,
-                pontoUsuarioRegistroDTO.getPonto().getEntrada(),
-                pontoUsuarioRegistroDTO.getPonto().getInicioAlmoco(),
-                pontoUsuarioRegistroDTO.getPonto().getFimAlmoco(),
-                pontoUsuarioRegistroDTO.getPonto().getSaida(),
-                "");
-
+        PontoUsuario pontoUsuario = geraPontoUsuario(pontoUsuarioRegistroDTO);
         pontoUsuarioRepository.save(pontoUsuario);
         return "OK";
     }
@@ -185,6 +177,19 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         return "OK";
     }
 
+    @Override
+    public String ajustePontoEmpregador(HorariosAlteracaoDTO horariosAlteracaoDTO) {
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(
+                Long.valueOf(horariosAlteracaoDTO.getIdFuncionario()),
+                horariosAlteracaoDTO.getData());
+
+        HorarioAlterado horarioAlterado = gerarHorarioAlterado(pontoUsuario, horariosAlteracaoDTO);
+        pontoUsuario.getHorariosAlterados().add(horarioAlterado);
+        pontoUsuarioRepository.save(pontoUsuario);
+
+        return "OK";
+    }
+
     private void insereArquivoPontoUsuario(String arquivoInserido, String idFuncionario, LocalDate data) {
         PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
         pontoUsuario.getAnexos().add(arquivoInserido);
@@ -197,6 +202,21 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         pontoUsuario.getAnexos().remove(arquivoInserido);
 
         pontoUsuarioRepository.save(pontoUsuario);
+    }
+
+    private static PontoUsuario geraPontoUsuario(PontoUsuarioRegistroDTO pontoUsuarioRegistroDTO) {
+        PontoUsuarioPK pontoUsuarioPK =
+                new PontoUsuarioPK(
+                        Long.parseLong(pontoUsuarioRegistroDTO.getIdUsuario()),
+                        pontoUsuarioRegistroDTO.getPonto().getData());
+
+        return new PontoUsuario(
+                pontoUsuarioPK,
+                pontoUsuarioRegistroDTO.getPonto().getEntrada(),
+                pontoUsuarioRegistroDTO.getPonto().getInicioAlmoco(),
+                pontoUsuarioRegistroDTO.getPonto().getFimAlmoco(),
+                pontoUsuarioRegistroDTO.getPonto().getSaida(),
+                "");
     }
 
 

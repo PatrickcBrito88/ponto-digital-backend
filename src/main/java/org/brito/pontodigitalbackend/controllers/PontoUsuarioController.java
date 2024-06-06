@@ -2,6 +2,7 @@ package org.brito.pontodigitalbackend.controllers;
 
 import org.brito.pontodigitalbackend.controllers.models.DefaultController;
 import org.brito.pontodigitalbackend.controllers.models.DefaultResponse;
+import org.brito.pontodigitalbackend.dtos.HorariosAlteracaoDTO;
 import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
@@ -74,6 +75,11 @@ public class PontoUsuarioController implements DefaultController {
                                                                 @RequestParam String idFuncionario,
                                                                 @RequestParam boolean aprovado) {
         return retornarSucesso(pontoUsuarioService.aprovarPonto(data, idFuncionario, aprovado));
+    }
+
+    @PutMapping("/ajuste-horario")
+    public ResponseEntity<DefaultResponse<String>> ajusteHorario(@RequestBody HorariosAlteracaoDTO horariosAlteracaoDTO) {
+        return retornarSucesso(pontoUsuarioService.ajustePontoEmpregador(horariosAlteracaoDTO));
     }
 
 

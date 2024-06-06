@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @Embeddable
 public class PontoUsuarioPK implements Serializable {
 
-
     private Long usuarioId;
     private LocalDate data;
 
