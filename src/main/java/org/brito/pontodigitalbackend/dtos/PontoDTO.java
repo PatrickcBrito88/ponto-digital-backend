@@ -21,7 +21,7 @@ public class PontoDTO {
     private LocalTime saida;
     private String justificativa;
     private List<String> anexos;
-    private Boolean isAprovado;
+    private String situacao;
     private List<HorarioAlterado> horariosAlterados;
 
 }

@@ -1,10 +1,8 @@
 package org.brito.pontodigitalbackend.enums;
 
-import org.springframework.http.HttpStatus;
-
 import java.util.Arrays;
 
-public enum CodigoHttp {
+public enum ECodigoHttp {
     MOVED_PERMANENTLY(301, "ALERTA_REQUISICAO_MOVIDA", "Requisição movida permanentemente"),
     BAD_REQUEST(400, "ERRO_REQUISICAO_ERRADA", "Requisição fora do padrão esperado"),
     UNAUTHORIZED(401, "ERRO_REQUISICAO_NAO_AUTORIZADA", "Usuário não autenticado"),
@@ -25,7 +23,7 @@ public enum CodigoHttp {
     private final String codigo;
     private final String detalhe;
 
-    CodigoHttp(int value, String codigo, String detalhe) {
+    ECodigoHttp(int value, String codigo, String detalhe) {
         this.value = value;
         this.codigo = codigo;
         this.detalhe = detalhe;
@@ -43,7 +41,7 @@ public enum CodigoHttp {
         return this.detalhe;
     }
 
-    public static CodigoHttp valueOf(int value) {
+    public static ECodigoHttp valueOf(int value) {
         return Arrays.stream(values())
                 .filter(v -> v.value == value)
                 .findFirst()

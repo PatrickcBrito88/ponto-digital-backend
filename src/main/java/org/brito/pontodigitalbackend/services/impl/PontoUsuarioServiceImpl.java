@@ -4,6 +4,7 @@ import org.brito.pontodigitalbackend.domain.HorarioAlterado;
 import org.brito.pontodigitalbackend.domain.PontoUsuario;
 import org.brito.pontodigitalbackend.domain.pk.PontoUsuarioPK;
 import org.brito.pontodigitalbackend.dtos.*;
+import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.brito.pontodigitalbackend.repositories.PontoUsuarioRepository;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.FuncionarioService;
@@ -84,7 +85,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                 item.getSaida(),
                                 item.getJustificativa(),
                                 item.getAnexos(),
-                                item.getIsAprovado(),
+                                item.getSituacao(),
                                 item.getHorariosAlterados()))
                         .collect(Collectors.toList());
 
@@ -112,7 +113,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                                 p.getSaida(),
                                                 p.getJustificativa(),
                                                 p.getAnexos(),
-                                                p.getIsAprovado(),
+                                                p.getSituacao(),
                                                 p.getHorariosAlterados());
                                     }).collect(Collectors.toList());
                                     dto.setPonto(pontoDTOs);
@@ -173,7 +174,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
     @Override
     public String aprovarPonto(LocalDate data, String idFuncionario, Boolean aprovado) {
         PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
-        pontoUsuario.setIsAprovado(aprovado);
+        pontoUsuario.setSituacao(EStatusPonto.APROVADO.getStatus());
 
         pontoUsuarioRepository.save(pontoUsuario);
         return "OK";
@@ -218,7 +219,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 pontoUsuarioRegistroDTO.getPonto().getInicioAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getFimAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getSaida(),
-                "");
+                "",
+                EStatusPonto.PENDENTE_EMPREGADOR.getStatus());
     }
 
 }
