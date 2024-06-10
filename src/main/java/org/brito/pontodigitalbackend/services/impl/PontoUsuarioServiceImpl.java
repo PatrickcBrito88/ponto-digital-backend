@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.brito.pontodigitalbackend.utils.ComparadorHorarioUtils.gerarHorarioAlterado;
+import static org.brito.pontodigitalbackend.utils.ComparadorHorarioUtils.gerarHorariosAlterados;
 import static org.brito.pontodigitalbackend.utils.FileUtils.getFileExtension;
 import static org.brito.pontodigitalbackend.utils.FileUtils.getFileName;
 import static org.brito.pontodigitalbackend.utils.S3Utils.geraKeyAnexo;
@@ -84,7 +84,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                 item.getSaida(),
                                 item.getJustificativa(),
                                 item.getAnexos(),
-                                item.getIsAprovado()))
+                                item.getIsAprovado(),
+                                item.getHorariosAlterados()))
                         .collect(Collectors.toList());
 
         return new PontoUsuarioDTO(idUsuario, listaPonto);
@@ -111,7 +112,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                                 p.getSaida(),
                                                 p.getJustificativa(),
                                                 p.getAnexos(),
-                                                p.getIsAprovado());
+                                                p.getIsAprovado(),
+                                                p.getHorariosAlterados());
                                     }).collect(Collectors.toList());
                                     dto.setPonto(pontoDTOs);
                                     return dto;
@@ -183,8 +185,8 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 Long.valueOf(horariosAlteracaoDTO.getIdFuncionario()),
                 horariosAlteracaoDTO.getData());
 
-        HorarioAlterado horarioAlterado = gerarHorarioAlterado(pontoUsuario, horariosAlteracaoDTO);
-        pontoUsuario.getHorariosAlterados().add(horarioAlterado);
+        List<HorarioAlterado> horariosAlterados = gerarHorariosAlterados(pontoUsuario, horariosAlteracaoDTO);
+        horariosAlterados.forEach(h -> pontoUsuario.getHorariosAlterados().add(h));
         pontoUsuarioRepository.save(pontoUsuario);
 
         return "OK";
@@ -218,6 +220,5 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 pontoUsuarioRegistroDTO.getPonto().getSaida(),
                 "");
     }
-
 
 }

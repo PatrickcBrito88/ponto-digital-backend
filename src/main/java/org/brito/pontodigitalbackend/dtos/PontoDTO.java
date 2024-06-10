@@ -3,6 +3,7 @@ package org.brito.pontodigitalbackend.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.brito.pontodigitalbackend.domain.HorarioAlterado;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,5 +22,6 @@ public class PontoDTO {
     private String justificativa;
     private List<String> anexos;
     private Boolean isAprovado;
+    private List<HorarioAlterado> horariosAlterados;
 
 }

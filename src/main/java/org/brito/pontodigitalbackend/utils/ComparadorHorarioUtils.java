@@ -4,14 +4,21 @@ import org.brito.pontodigitalbackend.domain.HorarioAlterado;
 import org.brito.pontodigitalbackend.domain.PontoUsuario;
 import org.brito.pontodigitalbackend.dtos.HorariosAlteracaoDTO;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static org.brito.pontodigitalbackend.utils.DataHoraUtils.buscaDataHoraAgora;
 
 public class ComparadorHorarioUtils {
 
 
-    public static HorarioAlterado gerarHorarioAlterado(PontoUsuario pontoUsuario, HorariosAlteracaoDTO horariosAlteracaoDTO) {
-        if (pontoUsuario.getEntrada() != null && !pontoUsuario.getEntrada().equals(horariosAlteracaoDTO.getEntrada())) {
+    public static List<HorarioAlterado> gerarHorariosAlterados(PontoUsuario pontoUsuario, HorariosAlteracaoDTO horariosAlteracaoDTO) {
+
+        List<HorarioAlterado> horariosAlterados = new ArrayList<>();
+        if (Objects.isNull(pontoUsuario.getEntrada())
+                || !pontoUsuario.getEntrada().equals(horariosAlteracaoDTO.getEntrada())) {
             String ENTRADA = "entrada";
             HorarioAlterado horarioAlterado =
                     criarHorarioAlterado(
@@ -19,10 +26,11 @@ public class ComparadorHorarioUtils {
                             horariosAlteracaoDTO.getEntrada(),
                             horariosAlteracaoDTO.getJustificativaEmpregador(), ENTRADA);
             pontoUsuario.setEntrada(horariosAlteracaoDTO.getEntrada());
-            return horarioAlterado;
+            horariosAlterados.add(horarioAlterado);
         }
 
-        if (pontoUsuario.getInicioAlmoco() != null && !pontoUsuario.getInicioAlmoco().equals(horariosAlteracaoDTO.getInicioAlmoco())) {
+        if (Objects.isNull(pontoUsuario.getInicioAlmoco())
+                || !pontoUsuario.getInicioAlmoco().equals(horariosAlteracaoDTO.getInicioAlmoco())) {
             String INICIO_ALMOCO = "inicio_almoco";
             HorarioAlterado horarioAlterado = criarHorarioAlterado(
                     pontoUsuario.getInicioAlmoco(),
@@ -30,10 +38,11 @@ public class ComparadorHorarioUtils {
                     horariosAlteracaoDTO.getJustificativaEmpregador(),
                     INICIO_ALMOCO);
             pontoUsuario.setInicioAlmoco(horariosAlteracaoDTO.getInicioAlmoco());
-            return horarioAlterado;
+            horariosAlterados.add(horarioAlterado);
         }
 
-        if (pontoUsuario.getFimAlmoco() != null && !pontoUsuario.getFimAlmoco().equals(horariosAlteracaoDTO.getFimAlmoco())) {
+        if (Objects.isNull(pontoUsuario.getFimAlmoco())
+                || !pontoUsuario.getFimAlmoco().equals(horariosAlteracaoDTO.getFimAlmoco())) {
             String FINAL_ALMOCO = "final_almoco";
             HorarioAlterado horarioAlterado = criarHorarioAlterado(
                     pontoUsuario.getFimAlmoco(),
@@ -41,10 +50,11 @@ public class ComparadorHorarioUtils {
                     horariosAlteracaoDTO.getJustificativaEmpregador(),
                     FINAL_ALMOCO);
             pontoUsuario.setFimAlmoco(horariosAlteracaoDTO.getFimAlmoco());
-            return horarioAlterado;
+            horariosAlterados.add(horarioAlterado);
         }
 
-        if (pontoUsuario.getSaida() != null && !pontoUsuario.getSaida().equals(horariosAlteracaoDTO.getSaida())) {
+        if (Objects.isNull(pontoUsuario.getSaida())
+                || !pontoUsuario.getSaida().equals(horariosAlteracaoDTO.getSaida())) {
             String SAIDA = "saida";
             HorarioAlterado horarioAlterado = criarHorarioAlterado(
                     pontoUsuario.getSaida(),
@@ -52,11 +62,10 @@ public class ComparadorHorarioUtils {
                     horariosAlteracaoDTO.getJustificativaEmpregador(),
                     SAIDA);
             pontoUsuario.setSaida(horariosAlteracaoDTO.getSaida());
-
-            return horarioAlterado;
+            horariosAlterados.add(horarioAlterado);
         }
 
-        return null;
+        return horariosAlterados;
     }
 
     private static HorarioAlterado criarHorarioAlterado(LocalTime horarioFuncionario,
@@ -68,8 +77,8 @@ public class ComparadorHorarioUtils {
         horarioAlterado.setHorarioAjustado(horarioAjustado);
         horarioAlterado.setJustificativa(justificativa);
         horarioAlterado.setPeriodo(periodo);
-        horarioAlterado.setHorarioAlteracao(LocalDateTime.now());
-
+        horarioAlterado.setHorarioAlteracao(buscaDataHoraAgora());
+        horarioAlterado.setFuncionarioCiente(false);
         return horarioAlterado;
     }
 
