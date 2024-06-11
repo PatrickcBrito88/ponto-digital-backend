@@ -35,6 +35,8 @@ public class PontoUsuario {
     @CollectionTable(name = "horarios_alterados")
     @Column(name = "horarios_alterados")
     private List<HorarioAlterado> horariosAlterados;
+    private Boolean cienciaFuncionarioPontoAlterado;
+    private String dataHoraCienciaFuncionarioPontoAlterado;
 
     public PontoUsuario(PontoUsuarioPK id, LocalTime entrada,
                         LocalTime inicioAlmoco, LocalTime fimAlmoco,

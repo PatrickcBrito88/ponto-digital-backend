@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.brito.pontodigitalbackend.utils.ComparadorHorarioUtils.gerarHorariosAlterados;
+import static org.brito.pontodigitalbackend.utils.DataHoraUtils.buscaDataHoraAgora;
 import static org.brito.pontodigitalbackend.utils.FileUtils.getFileExtension;
 import static org.brito.pontodigitalbackend.utils.FileUtils.getFileName;
 import static org.brito.pontodigitalbackend.utils.S3Utils.geraKeyAnexo;
@@ -172,9 +173,9 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
     }
 
     @Override
-    public String aprovarPonto(LocalDate data, String idFuncionario, Boolean aprovado) {
+    public String aprovarPonto(LocalDate data, String idFuncionario, EStatusPonto situacao) {
         PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
-        pontoUsuario.setSituacao(EStatusPonto.APROVADO.getStatus());
+        pontoUsuario.setSituacao(situacao.getStatus());
 
         pontoUsuarioRepository.save(pontoUsuario);
         return "OK";
@@ -188,6 +189,18 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
         List<HorarioAlterado> horariosAlterados = gerarHorariosAlterados(pontoUsuario, horariosAlteracaoDTO);
         horariosAlterados.forEach(h -> pontoUsuario.getHorariosAlterados().add(h));
+        pontoUsuario.setSituacao(EStatusPonto.PENDENTE_FUNCIONARIO.getStatus());
+        pontoUsuarioRepository.save(pontoUsuario);
+
+        return "OK";
+    }
+
+    @Override
+    public String confirmaAlteracaoPontoFuncionario(LocalDate data, String idFuncionario) {
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.valueOf(idFuncionario), data);
+        pontoUsuario.setCienciaFuncionarioPontoAlterado(Boolean.TRUE);
+        pontoUsuario.setDataHoraCienciaFuncionarioPontoAlterado(buscaDataHoraAgora());
+        pontoUsuario.setSituacao(EStatusPonto.APROVADO.getStatus());
         pontoUsuarioRepository.save(pontoUsuario);
 
         return "OK";

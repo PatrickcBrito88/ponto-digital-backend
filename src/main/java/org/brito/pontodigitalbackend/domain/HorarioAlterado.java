@@ -17,6 +17,5 @@ public class HorarioAlterado {
     private LocalTime horarioAjustado;
     private String justificativa;
     private String horarioAlteracao;
-    private boolean isFuncionarioCiente;
 
 }

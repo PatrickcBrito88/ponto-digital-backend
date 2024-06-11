@@ -4,6 +4,7 @@ import org.brito.pontodigitalbackend.dtos.HorariosAlteracaoDTO;
 import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
+import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +27,9 @@ public interface PontoUsuarioService {
 
     String apagarAnexo(String nomeArquivo, String idFuncionario, LocalDate data);
 
-    String aprovarPonto(LocalDate data, String idFuncionario, Boolean aprovado);
+    String aprovarPonto(LocalDate data, String idFuncionario, EStatusPonto situacao);
 
     String ajustePontoEmpregador(HorariosAlteracaoDTO horariosAlteracaoDTO);
+
+    String confirmaAlteracaoPontoFuncionario(LocalDate data, String idFuncionario);
 }

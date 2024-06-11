@@ -6,6 +6,7 @@ import org.brito.pontodigitalbackend.dtos.HorariosAlteracaoDTO;
 import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
 import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
+import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
 import org.brito.pontodigitalbackend.services.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,13 +74,19 @@ public class PontoUsuarioController implements DefaultController {
     @PutMapping("/aprovar")
     public ResponseEntity<DefaultResponse<String>> aprovarPonto(@RequestParam LocalDate data,
                                                                 @RequestParam String idFuncionario,
-                                                                @RequestParam boolean aprovado) {
-        return retornarSucesso(pontoUsuarioService.aprovarPonto(data, idFuncionario, aprovado));
+                                                                @RequestParam EStatusPonto situacao) {
+        return retornarSucesso(pontoUsuarioService.aprovarPonto(data, idFuncionario, situacao));
     }
 
     @PutMapping("/ajuste-horario")
     public ResponseEntity<DefaultResponse<String>> ajusteHorario(@RequestBody HorariosAlteracaoDTO horariosAlteracaoDTO) {
         return retornarSucesso(pontoUsuarioService.ajustePontoEmpregador(horariosAlteracaoDTO));
+    }
+
+    @PutMapping("/funcionario-ciente")
+    public ResponseEntity<DefaultResponse<String>> confirmaAlteracaoPontoFuncionario(@RequestParam LocalDate data,
+                                                                                     @RequestParam String idFuncionario) {
+        return retornarSucesso(pontoUsuarioService.confirmaAlteracaoPontoFuncionario(data, idFuncionario));
     }
 
 

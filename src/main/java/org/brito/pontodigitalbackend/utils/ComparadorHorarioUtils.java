@@ -78,7 +78,6 @@ public class ComparadorHorarioUtils {
         horarioAlterado.setJustificativa(justificativa);
         horarioAlterado.setPeriodo(periodo);
         horarioAlterado.setHorarioAlteracao(buscaDataHoraAgora());
-        horarioAlterado.setFuncionarioCiente(false);
         return horarioAlterado;
     }
 
