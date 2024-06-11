@@ -26,7 +26,10 @@ public class PontoUsuario {
     private LocalTime fimAlmoco;
     private LocalTime saida;
     private String situacao;
-    private String justificativa;
+    @ElementCollection
+    @CollectionTable(name = "ponto_justificativas")
+    @Column(name = "justificativa")
+    private List<Justificativa> justificativas;
     @ElementCollection
     @CollectionTable(name = "ponto_anexos")
     @Column(name = "anexo")
@@ -40,14 +43,14 @@ public class PontoUsuario {
 
     public PontoUsuario(PontoUsuarioPK id, LocalTime entrada,
                         LocalTime inicioAlmoco, LocalTime fimAlmoco,
-                        LocalTime saida, String justificativa,
+                        LocalTime saida, List<Justificativa> justificativas,
                         String situacao) {
         this.id = id;
         this.entrada = entrada;
         this.inicioAlmoco = inicioAlmoco;
         this.fimAlmoco = fimAlmoco;
         this.saida = saida;
-        this.justificativa = justificativa;
+        this.justificativas = justificativas;
         this.situacao = situacao;
     }
 }

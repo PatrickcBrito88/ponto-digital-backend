@@ -2,10 +2,7 @@ package org.brito.pontodigitalbackend.controllers;
 
 import org.brito.pontodigitalbackend.controllers.models.DefaultController;
 import org.brito.pontodigitalbackend.controllers.models.DefaultResponse;
-import org.brito.pontodigitalbackend.dtos.HorariosAlteracaoDTO;
-import org.brito.pontodigitalbackend.dtos.JustificativaUsuarioDTO;
-import org.brito.pontodigitalbackend.dtos.PontoUsuarioDTO;
-import org.brito.pontodigitalbackend.dtos.PontoUsuarioRegistroDTO;
+import org.brito.pontodigitalbackend.dtos.*;
 import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
 import org.brito.pontodigitalbackend.services.S3Service;
@@ -35,7 +32,7 @@ public class PontoUsuarioController implements DefaultController {
     }
 
     @PostMapping("/justificativa")
-    public ResponseEntity<DefaultResponse<String>> salvarJustificativa(@RequestBody JustificativaUsuarioDTO justificativaUsuarioDTO) {
+    public ResponseEntity<DefaultResponse<JustificativaDTO>> salvarJustificativa(@RequestBody JustificativaUsuarioDTO justificativaUsuarioDTO) {
         return retornarSucesso(pontoUsuarioService.salvarJutificativaUsuario(justificativaUsuarioDTO));
     }
 

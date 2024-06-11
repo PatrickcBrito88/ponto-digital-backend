@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.brito.pontodigitalbackend.domain.user.UserRole;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.AdminDTO;
+import org.brito.pontodigitalbackend.exception.NaoEncontradoException;
 import org.brito.pontodigitalbackend.exception.NegocioException;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.CorpoEmailService;
@@ -55,6 +56,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
 
         return MessageUtils.buscaMensagemValidacao("usuario.adm.senha.atualizada");
+    }
+
+    @Override
+    public Usuario buscaNomeUsuario(Long idUsuario) {
+        return usuarioRepository.findById(idUsuario).orElseThrow(() ->
+                new NaoEncontradoException(MessageUtils.buscaMensagemValidacao("usuario.nao.encontrado", idUsuario)));
     }
 
     private void verificaUsuarioExistente(String login) {

@@ -1,8 +1,10 @@
 package org.brito.pontodigitalbackend.services.impl;
 
 import org.brito.pontodigitalbackend.domain.HorarioAlterado;
+import org.brito.pontodigitalbackend.domain.Justificativa;
 import org.brito.pontodigitalbackend.domain.PontoUsuario;
 import org.brito.pontodigitalbackend.domain.pk.PontoUsuarioPK;
+import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.*;
 import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.brito.pontodigitalbackend.repositories.PontoUsuarioRepository;
@@ -84,7 +86,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                 item.getInicioAlmoco(),
                                 item.getFimAlmoco(),
                                 item.getSaida(),
-                                item.getJustificativa(),
+                                item.getJustificativas(),
                                 item.getAnexos(),
                                 item.getSituacao(),
                                 item.getHorariosAlterados()))
@@ -112,7 +114,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                                                 p.getInicioAlmoco(),
                                                 p.getFimAlmoco(),
                                                 p.getSaida(),
-                                                p.getJustificativa(),
+                                                p.getJustificativas(),
                                                 p.getAnexos(),
                                                 p.getSituacao(),
                                                 p.getHorariosAlterados());
@@ -135,15 +137,23 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
     }
 
     @Override
-    public String salvarJutificativaUsuario(JustificativaUsuarioDTO justificativaUsuarioDTO) {
+    public JustificativaDTO salvarJutificativaUsuario(JustificativaUsuarioDTO justificativaUsuarioDTO) {
         Long idUsuario = Long.valueOf(justificativaUsuarioDTO.getIdUsuario());
         LocalDate data = justificativaUsuarioDTO.getData();
         PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(idUsuario, data);
-        pontoUsuario.setJustificativa(justificativaUsuarioDTO.getJustificativa());
+        Usuario usuario = usuarioService.buscaNomeUsuario(idUsuario);
+        Justificativa justificativa = new Justificativa(
+                justificativaUsuarioDTO.getJustificativa(),
+                buscaDataHoraAgora(),
+                usuario.getUsername()
+                );
+
+        pontoUsuario.getJustificativas().add(justificativa);
 
         pontoUsuarioRepository.save(pontoUsuario);
 
-        return "Justificativa guardada com sucesso";
+        return mapper.map(justificativa, JustificativaDTO.class);
+
     }
 
     @Override
@@ -232,7 +242,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 pontoUsuarioRegistroDTO.getPonto().getInicioAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getFimAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getSaida(),
-                "",
+                null,
                 EStatusPonto.PENDENTE_EMPREGADOR.getStatus());
     }
 
