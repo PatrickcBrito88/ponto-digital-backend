@@ -86,5 +86,10 @@ public class PontoUsuarioController implements DefaultController {
         return retornarSucesso(pontoUsuarioService.confirmaAlteracaoPontoFuncionario(data, idFuncionario));
     }
 
+    @PutMapping("/solicitar-ajuste")
+    public ResponseEntity<DefaultResponse<String>> solicitarAjustePontoFuncionario(@RequestBody JustificativaUsuarioDTO justificativaUsuarioDTO) {
+        return retornarSucesso(pontoUsuarioService.solicitarAjustePonto(justificativaUsuarioDTO));
+    }
+
 
 }

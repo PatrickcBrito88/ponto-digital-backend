@@ -35,6 +35,7 @@ import static org.brito.pontodigitalbackend.utils.S3Utils.geraKeyAnexo;
 @Service
 public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
+    public static final String ADMIN = "ADMIN";
     final
     PontoUsuarioRepository pontoUsuarioRepository;
 
@@ -146,7 +147,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 justificativaUsuarioDTO.getJustificativa(),
                 buscaDataHoraAgora(),
                 usuario.getUsername()
-                );
+        );
 
         pontoUsuario.getJustificativas().add(justificativa);
 
@@ -199,6 +200,11 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
         List<HorarioAlterado> horariosAlterados = gerarHorariosAlterados(pontoUsuario, horariosAlteracaoDTO);
         horariosAlterados.forEach(h -> pontoUsuario.getHorariosAlterados().add(h));
+        Justificativa justificativa = new Justificativa(
+                horariosAlteracaoDTO.getJustificativaEmpregador(),
+                buscaDataHoraAgora(),
+                ADMIN);
+        pontoUsuario.getJustificativas().add(justificativa);
         pontoUsuario.setSituacao(EStatusPonto.PENDENTE_FUNCIONARIO.getStatus());
         pontoUsuarioRepository.save(pontoUsuario);
 
@@ -211,6 +217,22 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         pontoUsuario.setCienciaFuncionarioPontoAlterado(Boolean.TRUE);
         pontoUsuario.setDataHoraCienciaFuncionarioPontoAlterado(buscaDataHoraAgora());
         pontoUsuario.setSituacao(EStatusPonto.APROVADO.getStatus());
+        pontoUsuarioRepository.save(pontoUsuario);
+
+        return "OK";
+    }
+
+    @Override
+    public String solicitarAjustePonto(JustificativaUsuarioDTO justificativaUsuarioDTO) {
+        Long idUsuario = Long.valueOf(justificativaUsuarioDTO.getIdUsuario());
+        String nomeUsuario = usuarioService.buscaNomeUsuario(idUsuario).getUsername();
+        LocalDate data = justificativaUsuarioDTO.getData();
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(idUsuario, data);
+
+        Justificativa justificativa = new Justificativa(justificativaUsuarioDTO.getJustificativa(), buscaDataHoraAgora(), nomeUsuario);
+        pontoUsuario.getJustificativas().add(justificativa);
+        pontoUsuario.setSituacao(EStatusPonto.PENDENTE_EMPREGADOR.getStatus());
+
         pontoUsuarioRepository.save(pontoUsuario);
 
         return "OK";

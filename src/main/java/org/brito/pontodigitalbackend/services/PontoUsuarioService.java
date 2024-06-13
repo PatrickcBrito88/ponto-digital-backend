@@ -29,4 +29,6 @@ public interface PontoUsuarioService {
     String ajustePontoEmpregador(HorariosAlteracaoDTO horariosAlteracaoDTO);
 
     String confirmaAlteracaoPontoFuncionario(LocalDate data, String idFuncionario);
+
+    String solicitarAjustePonto(JustificativaUsuarioDTO justificativaUsuarioDTO);
 }

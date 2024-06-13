@@ -15,7 +15,6 @@ public class HorarioAlterado {
     private String periodo;
     private LocalTime horarioInicial;
     private LocalTime horarioAjustado;
-    private String justificativa;
-    private String horarioAlteracao;
+    private String dataHoraAlteracao;
 
 }

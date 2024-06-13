@@ -24,7 +24,7 @@ public class ComparadorHorarioUtils {
                     criarHorarioAlterado(
                             pontoUsuario.getEntrada(),
                             horariosAlteracaoDTO.getEntrada(),
-                            horariosAlteracaoDTO.getJustificativaEmpregador(), ENTRADA);
+                            ENTRADA);
             pontoUsuario.setEntrada(horariosAlteracaoDTO.getEntrada());
             horariosAlterados.add(horarioAlterado);
         }
@@ -35,7 +35,6 @@ public class ComparadorHorarioUtils {
             HorarioAlterado horarioAlterado = criarHorarioAlterado(
                     pontoUsuario.getInicioAlmoco(),
                     horariosAlteracaoDTO.getInicioAlmoco(),
-                    horariosAlteracaoDTO.getJustificativaEmpregador(),
                     INICIO_ALMOCO);
             pontoUsuario.setInicioAlmoco(horariosAlteracaoDTO.getInicioAlmoco());
             horariosAlterados.add(horarioAlterado);
@@ -47,7 +46,6 @@ public class ComparadorHorarioUtils {
             HorarioAlterado horarioAlterado = criarHorarioAlterado(
                     pontoUsuario.getFimAlmoco(),
                     horariosAlteracaoDTO.getFimAlmoco(),
-                    horariosAlteracaoDTO.getJustificativaEmpregador(),
                     FINAL_ALMOCO);
             pontoUsuario.setFimAlmoco(horariosAlteracaoDTO.getFimAlmoco());
             horariosAlterados.add(horarioAlterado);
@@ -59,7 +57,6 @@ public class ComparadorHorarioUtils {
             HorarioAlterado horarioAlterado = criarHorarioAlterado(
                     pontoUsuario.getSaida(),
                     horariosAlteracaoDTO.getSaida(),
-                    horariosAlteracaoDTO.getJustificativaEmpregador(),
                     SAIDA);
             pontoUsuario.setSaida(horariosAlteracaoDTO.getSaida());
             horariosAlterados.add(horarioAlterado);
@@ -70,14 +67,12 @@ public class ComparadorHorarioUtils {
 
     private static HorarioAlterado criarHorarioAlterado(LocalTime horarioFuncionario,
                                                         LocalTime horarioAjustado,
-                                                        String justificativa,
                                                         String periodo) {
         HorarioAlterado horarioAlterado = new HorarioAlterado();
         horarioAlterado.setHorarioInicial(horarioFuncionario);
         horarioAlterado.setHorarioAjustado(horarioAjustado);
-        horarioAlterado.setJustificativa(justificativa);
         horarioAlterado.setPeriodo(periodo);
-        horarioAlterado.setHorarioAlteracao(buscaDataHoraAgora());
+        horarioAlterado.setDataHoraAlteracao(buscaDataHoraAgora());
         return horarioAlterado;
     }
 
