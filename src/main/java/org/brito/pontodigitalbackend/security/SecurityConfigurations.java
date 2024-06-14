@@ -31,6 +31,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/registro").permitAll() //TODO COLOCAR PARA PERMITIR APENAS COM ADMIN ROLE
                         .requestMatchers(HttpMethod.PUT, "/auth/altera-senha-adm").permitAll() //TODO COLOCAR PARA PERMITIR APENAS COM ADMIN ROLE
+                        .requestMatchers(HttpMethod.GET, "/auth/validate-token").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
