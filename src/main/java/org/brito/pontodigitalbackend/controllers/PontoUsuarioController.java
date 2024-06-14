@@ -2,6 +2,7 @@ package org.brito.pontodigitalbackend.controllers;
 
 import org.brito.pontodigitalbackend.controllers.models.DefaultController;
 import org.brito.pontodigitalbackend.controllers.models.DefaultResponse;
+import org.brito.pontodigitalbackend.domain.PontoUsuario;
 import org.brito.pontodigitalbackend.dtos.*;
 import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
@@ -73,6 +74,12 @@ public class PontoUsuarioController implements DefaultController {
                                                                 @RequestParam String idFuncionario,
                                                                 @RequestParam EStatusPonto situacao) {
         return retornarSucesso(pontoUsuarioService.aprovarPonto(data, idFuncionario, situacao));
+    }
+
+    @GetMapping("/validar")
+    public ResponseEntity<DefaultResponse<PontoUsuario>> validarPonto(@RequestParam LocalDate data,
+                                                                      @RequestParam String idFuncionario) {
+        return retornarSucesso(pontoUsuarioService.validarPonto(data, idFuncionario));
     }
 
     @PutMapping("/ajuste-horario")

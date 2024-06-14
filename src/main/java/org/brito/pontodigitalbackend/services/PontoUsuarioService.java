@@ -1,5 +1,6 @@
 package org.brito.pontodigitalbackend.services;
 
+import org.brito.pontodigitalbackend.domain.PontoUsuario;
 import org.brito.pontodigitalbackend.dtos.*;
 import org.brito.pontodigitalbackend.enums.EStatusPonto;
 import org.springframework.data.domain.Page;
@@ -31,4 +32,6 @@ public interface PontoUsuarioService {
     String confirmaAlteracaoPontoFuncionario(LocalDate data, String idFuncionario);
 
     String solicitarAjustePonto(JustificativaUsuarioDTO justificativaUsuarioDTO);
+
+    PontoUsuario validarPonto(LocalDate data, String idFuncionario);
 }

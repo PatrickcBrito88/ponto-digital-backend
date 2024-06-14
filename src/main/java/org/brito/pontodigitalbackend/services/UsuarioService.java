@@ -9,6 +9,7 @@ public interface UsuarioService {
 
     String alterarSenhaAdm(AdminDTO adminDTO);
 
-    Usuario buscaNomeUsuario(Long idUsuario);
+    Usuario buscarUsuario(Long idUsuario);
+
 
 }

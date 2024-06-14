@@ -59,7 +59,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario buscaNomeUsuario(Long idUsuario) {
+    public Usuario buscarUsuario(Long idUsuario) {
         return usuarioRepository.findById(idUsuario).orElseThrow(() ->
                 new NaoEncontradoException(MessageUtils.buscaMensagemValidacao("usuario.nao.encontrado", idUsuario)));
     }

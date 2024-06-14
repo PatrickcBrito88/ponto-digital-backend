@@ -1,18 +1,19 @@
 package org.brito.pontodigitalbackend.services.impl;
 
-import org.brito.pontodigitalbackend.domain.HorarioAlterado;
-import org.brito.pontodigitalbackend.domain.Justificativa;
-import org.brito.pontodigitalbackend.domain.PontoUsuario;
+import org.brito.pontodigitalbackend.domain.*;
 import org.brito.pontodigitalbackend.domain.pk.PontoUsuarioPK;
 import org.brito.pontodigitalbackend.domain.user.Usuario;
 import org.brito.pontodigitalbackend.dtos.*;
 import org.brito.pontodigitalbackend.enums.EStatusPonto;
+import org.brito.pontodigitalbackend.exception.HorarioInvalidoException;
+import org.brito.pontodigitalbackend.exception.NaoEncontradoException;
 import org.brito.pontodigitalbackend.repositories.PontoUsuarioRepository;
 import org.brito.pontodigitalbackend.repositories.UsuarioRepository;
 import org.brito.pontodigitalbackend.services.FuncionarioService;
 import org.brito.pontodigitalbackend.services.PontoUsuarioService;
 import org.brito.pontodigitalbackend.services.S3Service;
 import org.brito.pontodigitalbackend.services.UsuarioService;
+import org.brito.pontodigitalbackend.utils.MessageUtils;
 import org.brito.pontodigitalbackend.utils.Paginador;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.brito.pontodigitalbackend.utils.ComparadorHorarioUtils.gerarHorariosAlterados;
@@ -139,10 +143,10 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
     @Override
     public JustificativaDTO salvarJutificativaUsuario(JustificativaUsuarioDTO justificativaUsuarioDTO) {
-        Long idUsuario = Long.valueOf(justificativaUsuarioDTO.getIdUsuario());
+        String idFuncionario = justificativaUsuarioDTO.getIdUsuario();
         LocalDate data = justificativaUsuarioDTO.getData();
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(idUsuario, data);
-        Usuario usuario = usuarioService.buscaNomeUsuario(idUsuario);
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
+        Usuario usuario = usuarioService.buscarUsuario(Long.valueOf(idFuncionario));
         Justificativa justificativa = new Justificativa(
                 justificativaUsuarioDTO.getJustificativa(),
                 buscaDataHoraAgora(),
@@ -185,7 +189,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
     @Override
     public String aprovarPonto(LocalDate data, String idFuncionario, EStatusPonto situacao) {
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
         pontoUsuario.setSituacao(situacao.getStatus());
 
         pontoUsuarioRepository.save(pontoUsuario);
@@ -194,9 +198,9 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
     @Override
     public String ajustePontoEmpregador(HorariosAlteracaoDTO horariosAlteracaoDTO) {
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(
-                Long.valueOf(horariosAlteracaoDTO.getIdFuncionario()),
-                horariosAlteracaoDTO.getData());
+        String idFuncionario = horariosAlteracaoDTO.getIdFuncionario();
+        LocalDate data = horariosAlteracaoDTO.getData();
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
 
         List<HorarioAlterado> horariosAlterados = gerarHorariosAlterados(pontoUsuario, horariosAlteracaoDTO);
         horariosAlterados.forEach(h -> pontoUsuario.getHorariosAlterados().add(h));
@@ -213,7 +217,7 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
     @Override
     public String confirmaAlteracaoPontoFuncionario(LocalDate data, String idFuncionario) {
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.valueOf(idFuncionario), data);
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
         pontoUsuario.setCienciaFuncionarioPontoAlterado(Boolean.TRUE);
         pontoUsuario.setDataHoraCienciaFuncionarioPontoAlterado(buscaDataHoraAgora());
         pontoUsuario.setSituacao(EStatusPonto.APROVADO.getStatus());
@@ -224,10 +228,10 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
 
     @Override
     public String solicitarAjustePonto(JustificativaUsuarioDTO justificativaUsuarioDTO) {
-        Long idUsuario = Long.valueOf(justificativaUsuarioDTO.getIdUsuario());
-        String nomeUsuario = usuarioService.buscaNomeUsuario(idUsuario).getUsername();
+        String idFuncionario = justificativaUsuarioDTO.getIdUsuario();
+        String nomeUsuario = usuarioService.buscarUsuario(Long.valueOf(idFuncionario)).getUsername();
         LocalDate data = justificativaUsuarioDTO.getData();
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(idUsuario, data);
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
 
         Justificativa justificativa = new Justificativa(justificativaUsuarioDTO.getJustificativa(), buscaDataHoraAgora(), nomeUsuario);
         pontoUsuario.getJustificativas().add(justificativa);
@@ -238,15 +242,28 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
         return "OK";
     }
 
+    @Override
+    public PontoUsuario validarPonto(LocalDate data, String idFuncionario) {
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
+        verificarHorarios(pontoUsuario);
+
+        Funcionario funcionario = funcionarioService.buscarPeloId(Long.valueOf(idFuncionario));
+        //TODO Serviço para buscar nas configurações o limite de tolerância. Por enquanto vou usar mocado
+        Duration tolerancia = Duration.ofMinutes(5);
+        verificaAtraso(pontoUsuario, tolerancia, funcionario.getHorarioEntrada(), funcionario.getHorarioSaida());
+        verificaHoraExtra(pontoUsuario, tolerancia, funcionario.getHorarioEntrada(), funcionario.getHorarioSaida());
+        return pontoUsuario;
+    }
+
     private void insereArquivoPontoUsuario(String arquivoInserido, String idFuncionario, LocalDate data) {
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
         pontoUsuario.getAnexos().add(arquivoInserido);
 
         pontoUsuarioRepository.save(pontoUsuario);
     }
 
     private void removeArquivoPontoUsuario(String arquivoInserido, String idFuncionario, LocalDate data) {
-        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        PontoUsuario pontoUsuario = buscaPontoUsuarioPeloIdEData(idFuncionario, data);
         pontoUsuario.getAnexos().remove(arquivoInserido);
 
         pontoUsuarioRepository.save(pontoUsuario);
@@ -265,7 +282,89 @@ public class PontoUsuarioServiceImpl implements PontoUsuarioService {
                 pontoUsuarioRegistroDTO.getPonto().getFimAlmoco(),
                 pontoUsuarioRegistroDTO.getPonto().getSaida(),
                 null,
-                EStatusPonto.PENDENTE_EMPREGADOR.getStatus());
+                EStatusPonto.PENDENTE_EMPREGADOR.getStatus(),
+                new Atraso(new ResultadoPonto(), new ResultadoPonto(), new ResultadoPonto()),
+                new HoraExtra(new ResultadoPonto(), new ResultadoPonto()));
     }
 
+    private void verificarHorarios(PontoUsuario pontoUsuario) {
+        LocalTime entrada = pontoUsuario.getEntrada();
+        LocalTime inicioAlmoco = pontoUsuario.getInicioAlmoco();
+        LocalTime fimAlmoco = pontoUsuario.getFimAlmoco();
+        LocalTime saida = pontoUsuario.getSaida();
+
+        if (Objects.isNull(entrada) ||
+                Objects.isNull(inicioAlmoco) ||
+                Objects.isNull(fimAlmoco) ||
+                Objects.isNull(saida)) {
+            throw new HorarioInvalidoException(
+                    MessageUtils.buscaMensagemValidacao("horario.nulo"));
+        }
+
+        if (!inicioAlmoco.isAfter(entrada)) {
+            throw new HorarioInvalidoException(
+                    MessageUtils.buscaMensagemValidacao("horario.inicio.almoco.invalido"));
+        }
+        if (!fimAlmoco.isAfter(inicioAlmoco)) {
+            throw new HorarioInvalidoException(
+                    MessageUtils.buscaMensagemValidacao("horario.fim.almoco.invalido"));
+        }
+        if (!saida.isAfter(fimAlmoco)) {
+            throw new HorarioInvalidoException(
+                    MessageUtils.buscaMensagemValidacao("horario.saida.invalido"));
+        }
+    }
+
+    private void verificaAtraso(PontoUsuario pontoUsuario, Duration toleracia,
+                                LocalTime horarioEntrada, LocalTime horarioSaida) {
+        LocalTime entrada = pontoUsuario.getEntrada().withSecond(0);
+        LocalTime inicioAlmoco = pontoUsuario.getInicioAlmoco().withSecond(0);
+        LocalTime fimAlmoco = pontoUsuario.getFimAlmoco().withSecond(0);
+        LocalTime saida = pontoUsuario.getSaida().withSecond(0);
+
+        Duration diferencaEntrada = Duration.between(horarioEntrada, entrada);
+        Duration diferencaAlmoco = Duration.between(inicioAlmoco, fimAlmoco).minus(Duration.ofHours(1));
+        Duration diferencaSaida = Duration.between(saida, horarioSaida);
+
+        double atrasoEntrada = calculaDiferenca(diferencaEntrada, toleracia);
+        double atrasoAlmoco = calculaDiferenca(diferencaAlmoco, toleracia);
+        double saidaAntecipada = calculaDiferenca(diferencaSaida, toleracia);
+
+        pontoUsuario.getAtrasos().getAtrasoAlmoco().setMinutos(atrasoAlmoco);
+        pontoUsuario.getAtrasos().getAtrasoEntrada().setMinutos(atrasoEntrada);
+        pontoUsuario.getAtrasos().getSaidaAntecipada().setMinutos(saidaAntecipada);
+    }
+
+    private void verificaHoraExtra(PontoUsuario pontoUsuario, Duration toleracia,
+                                   LocalTime horarioEntrada, LocalTime horarioSaida) {
+        LocalTime entrada = pontoUsuario.getEntrada().withSecond(0);
+        LocalTime saida = pontoUsuario.getSaida().withSecond(0);
+
+        Duration diferencaEntrada = Duration.between(entrada, horarioEntrada);
+        Duration diferencaSaida = Duration.between(horarioSaida, saida);
+
+        double horaExtraEntrada = calculaDiferenca(diferencaEntrada, toleracia);
+        double horaExtraSaida = calculaDiferenca(diferencaSaida, toleracia);
+
+        pontoUsuario.getHorasExtras().getHoraExtraEntrada().setMinutos(horaExtraEntrada);
+        pontoUsuario.getHorasExtras().getHoraExtraSaida().setMinutos(horaExtraSaida);
+    }
+
+    private static double calculaDiferenca(Duration diferenca, Duration tolerancia) {
+        if (diferenca.isNegative() || diferenca.compareTo(tolerancia) <= 0) {
+            return 0;
+        } else {
+            return diferenca.toMinutes();
+        }
+    }
+
+    private PontoUsuario buscaPontoUsuarioPeloIdEData(String idFuncionario, LocalDate data) {
+        PontoUsuario pontoUsuario = pontoUsuarioRepository.buscarPorUsuarioEData(Long.parseLong(idFuncionario), data);
+        if (Objects.isNull(pontoUsuario)) {
+            throw new NaoEncontradoException(MessageUtils.buscaMensagemValidacao("ponto.usuario.nao.encontrado"));
+        }
+        return pontoUsuario;
+    }
 }
+
+
